@@ -8,6 +8,6 @@
 
 #import "ConnectivityManager.h"
 
-@interface ViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,MCBrowserViewControllerDelegate,ConnectivityManagerDelegate>
+@interface ViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,ConnectivityManagerDelegate>
 
 @end

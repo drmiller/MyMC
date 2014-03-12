@@ -17,6 +17,8 @@
 
 @property(nonatomic,strong) NSDictionary *discoveryInfo;
 
+@property(nonatomic,strong)MCPeerID *nearbyPeer;
+
 @end
 
 
@@ -25,7 +27,7 @@
 
 #pragma mark Setters/Getters
 
-- (NSArray *)connectedPeers {
+- (NSArray *)connectedPeerIDs {
     return self.session.connectedPeers;
 }
 
@@ -37,6 +39,7 @@
 - (MCBrowserViewController *)browserVC {
     if (_browserVC == nil) {
         _browserVC = [[MCBrowserViewController alloc] initWithServiceType:kServiceType session:self.session];
+        [_browserVC setDelegate:self];
     }
     return _browserVC;
 }
@@ -114,8 +117,30 @@
 - (void)sendMessageKey:(NSString *)theKey value:(id)value {
     NSError *error;
     NSData *theMessage = [NSKeyedArchiver archivedDataWithRootObject:@{ theKey :  value}];
-    [self.session sendData:theMessage toPeers:self.connectedPeers withMode:MCSessionSendDataUnreliable error:&error];
+    [self.session sendData:theMessage toPeers:self.connectedPeerIDs withMode:MCSessionSendDataUnreliable error:&error];
 }
+
+
+#pragma mark MCBrowserViewControllerDelegate methods
+
+// these are only for the master which is the only one that does the browsing
+
+- (void)browserViewControllerDidFinish:(MCBrowserViewController *)browserViewController {
+    [self.delegate browserViewController:browserViewController didConnect:YES];
+}
+
+- (void)browserViewControllerWasCancelled:(MCBrowserViewController *)browserViewController {
+    [self.delegate browserViewController:browserViewController didConnect:NO];
+}
+
+- (BOOL)browserViewController:(MCBrowserViewController *)browserViewController shouldPresentNearbyPeer:(MCPeerID *)peerID withDiscoveryInfo:(NSDictionary *)info {
+    
+    // grab this to cancel while connecting
+    self.nearbyPeer = peerID;
+    
+    return YES;
+}
+
 
 
 
@@ -127,6 +152,8 @@
        withContext:(NSData *)context
  invitationHandler:(void (^)(BOOL accept, MCSession *session))invitationHandler {
     
+    self.nearbyPeer = peerID;
+    
     // the master browses for advertisers and
     // there could be more than one master browsing for advertisers
     // so, don't want to let the advertiser connect with more than one
@@ -137,6 +164,10 @@
         // accept the invitation
         invitationHandler(YES, self.session);
         
+        self.isConnecting = YES;
+        
+        NSLog(@"Accepted Invitation");
+        
         // and stop advertising
         [self advertiseSelf:NO];
         
@@ -144,14 +175,25 @@
         // decline the invitation
         // and I think the master gets notified
         invitationHandler(NO, self.session);
+        
+        self.isConnecting = NO;
+        
+        NSLog(@"Declined Invitation");
     }
 }
+
+
+//- (void)cancelConnectAttempt {
+//    if (self.isConnecting) {
+//        [self.session cancelConnectPeer:self.nearbyPeer];
+//    }
+//}
 
 
 #pragma mark - MCSession Delegate method implementation
 
 /******
-Important: Delegate calls occur on a private operation queue. If your app needs to perform an action on a particular run loop or operation queue, its delegate method should explicitly dispatch or schedule that work.
+Important: MCSession Delegate calls occur on a private operation queue. If your app needs to perform an action on a particular run loop or operation queue, its delegate method should explicitly dispatch or schedule that work.
 ******/
 
 // delegate calls are ALL called on a PRIVATE queue
@@ -160,49 +202,83 @@ Important: Delegate calls occur on a private operation queue. If your app needs 
 // both browsers and advertisers come here
 -(void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state {
     
-    BOOL didConnect = NO;
+    BOOL didConnect = NO; // default as not connected
     
     NSString *peerDisplayName = peerID.displayName;
-
-    if (state == MCSessionStateConnected) {
-        
-        // multiple browsers trying to connect to an advertiser
-        // are already eliminated by the invitation
-        [self.connectedPeerNames addObject:peerDisplayName];
-        
-        didConnect = YES;
-        
-//        if (self.isAdvertising) {
-//            [self advertiseSelf:NO];
-//        }
-        
-    } else if (state == MCSessionStateNotConnected) {
-        
-        // this means the connection did not occur
-        // was lost, or the device turned off or something
-        
-        if ([self.connectedPeerNames count]) {
-            
-            // should be the same object that was added originally????
-            [self.connectedPeerNames removeObject:peerDisplayName];
-            
-            
-//            NSUInteger indexOfPeer = [self.connectedPeerNames indexOfObject:peerDisplayName];
-//            [self.connectedPeerNames removeObjectAtIndex:indexOfPeer];
-        }
-    }
     
+    switch ((NSInteger)state) {
+            
+        case MCSessionStateConnected:
+        {
+            NSLog(@"Session Connected");
+            [self.connectedPeerNames addObject:peerDisplayName];
+            didConnect = YES;
+        }
+            break;
+            
+            // not called or used
+//        case MCSessionStateConnecting:
+//            NSLog(@"Session Connecting");
+//            break;
+            
+        case MCSessionStateNotConnected:
+        {
+            NSLog(@"Session Not Connected");
+            if ([self.connectedPeerNames count]) {
+                // should be the same object that was added originally????
+                [self.connectedPeerNames removeObject:peerDisplayName];
+            }
+        }
+            break;
+    }
+
+    
+
+    
+//    if (state == MCSessionStateConnecting) {
+//        // connecting
+//        self.isConnecting = YES;
+//    } else
+//
+//    if (state == MCSessionStateConnected) {
+//        
+//        // multiple browsers trying to connect to an advertiser
+//        // are already eliminated by the invitation
+//        [self.connectedPeerNames addObject:peerDisplayName];
+//        
+//        didConnect = YES;
+//        
+////        if (self.isAdvertising) {
+////            [self advertiseSelf:NO];
+////        }
+//        
+//    } else if (state == MCSessionStateNotConnected) {
+//        
+//        // this means the connection did not occur
+//        // was lost, or the device turned off or something
+//        
+//        if ([self.connectedPeerNames count]) {
+//            
+//            // should be the same object that was added originally????
+//            [self.connectedPeerNames removeObject:peerDisplayName];
+//            
+//            
+////            NSUInteger indexOfPeer = [self.connectedPeerNames indexOfObject:peerDisplayName];
+////            [self.connectedPeerNames removeObjectAtIndex:indexOfPeer];
+//        }
+//    }
+//    
+//    self.isConnecting = NO;
+
     // could also use Notifications instead
     //[self.delegate connectedPeerNamesDidChange:self.connectedPeerNames hasConnections:self.hasConnections];
     
     
     // delegate calls are ALL called on a PRIVATE queue
     // and the delegate updates the UI, so it has to do it on the main queue
-    //dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self.delegate connectionStateDidConnect:didConnect withPeerID:peerID];
-    //});
-    
-    
+    });
     
     
     // in case I decide to do notifications instead
@@ -219,13 +295,18 @@ Important: Delegate calls occur on a private operation queue. If your app needs 
 
 -(void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
     
+    // **** this is called on a private queue !!!! ******
+    
     NSDictionary *messageDict = [NSKeyedUnarchiver unarchiveObjectWithData:data];
     
     if (messageDict && [messageDict count] == 1) {
         NSString *theKey = [[messageDict allKeys] lastObject];
         id theValue = [messageDict valueForKey:theKey];
         
-        [self.delegate didReceiveMessageWithKey:theKey value:theValue];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate didReceiveMessageWithKey:theKey value:theValue];
+        });
+        
         
         // in case I decide to do notifications instead
 //        NSDictionary *dict = @{
@@ -244,13 +325,8 @@ Important: Delegate calls occur on a private operation queue. If your app needs 
 
 // required delegate methods that are not used here
 
--(void)session:(MCSession *)session didStartReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID withProgress:(NSProgress *)progress {
-}
-
--(void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
-}
-
--(void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {
-}
+-(void)session:(MCSession *)session didStartReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID withProgress:(NSProgress *)progress {}
+-(void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {}
+-(void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {}
 
 @end

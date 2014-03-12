@@ -115,6 +115,7 @@
 		3A1A78F618CBEE07003434AA /* test-myMC */ = {
 			isa = PBXGroup;
 			children = (
+				95A92D5118D0F74E00EE4B98 /* iPad */,
 				3A1A78FF18CBEE07003434AA /* AppDelegate.h */,
 				3A1A790018CBEE07003434AA /* AppDelegate.m */,
 				3A1A790218CBEE07003434AA /* Main.storyboard */,
@@ -155,6 +156,13 @@
 				3A1A791818CBEE07003434AA /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		95A92D5118D0F74E00EE4B98 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = iPad;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -392,8 +400,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "test-myMC/test-myMC-Prefix.pch";
 				INFOPLIST_FILE = "test-myMC/test-myMC-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -408,8 +418,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "test-myMC/test-myMC-Prefix.pch";
 				INFOPLIST_FILE = "test-myMC/test-myMC-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

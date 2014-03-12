@@ -17,10 +17,12 @@
 
 - (void)peerDidDisconnect:(MCPeerID *)peer;
 
+- (void)browserViewController:(MCBrowserViewController *)browser didConnect:(BOOL)didConnect;
+
 @end
 
 
-@interface ConnectivityManager : NSObject<MCSessionDelegate,MCNearbyServiceAdvertiserDelegate>
+@interface ConnectivityManager : NSObject<MCSessionDelegate,MCNearbyServiceAdvertiserDelegate,MCBrowserViewControllerDelegate>
 
 @property(nonatomic,weak) id<ConnectivityManagerDelegate> delegate;
 
@@ -31,17 +33,21 @@
 @property (nonatomic, strong) MCNearbyServiceAdvertiser *nearbyAdvertiser;
 
 @property(nonatomic,strong)NSMutableArray *connectedPeerNames;
-@property(nonatomic,strong,readonly)NSArray *connectedPeers;
+@property(nonatomic,strong,readonly)NSArray *connectedPeerIDs;
 
 @property(nonatomic,assign)BOOL hasConnections;
 
 @property(nonatomic,assign)BOOL isAdvertising;
 
+@property (nonatomic,assign)BOOL isConnecting;
+
 - (void)disconnectAllPeers;
 
 - (void)disconnectFromSession;
 
--(void)advertiseSelf:(BOOL)shouldAdvertise;
+- (void)advertiseSelf:(BOOL)shouldAdvertise;
+
+//- (void)cancelConnectAttempt;
 
 //- (void)sendMessage:(NSDictionary *)message;
 

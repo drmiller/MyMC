@@ -18,8 +18,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *browseButton;
 
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *advertisingActivityIndicator;
-@property (nonatomic,assign)BOOL isMaster;
-@property (nonatomic,assign)BOOL doConnect;
+
+
+@property (nonatomic,assign)BOOL isMaster; // segmented control
+@property (nonatomic,assign)BOOL doConnect; // switch
 
 @property (nonatomic,assign)BOOL isAdvertising;
 @property (nonatomic,assign)BOOL isBrowsing;
@@ -117,9 +119,7 @@
 
 
 - (void)displayBrowser {
-    MCBrowserViewController *vc = [self.connectManager browserVC];
-    [vc setDelegate:self];
-    [self presentViewController:vc animated:YES completion:nil];
+    [self presentViewController:[self.connectManager browserVC] animated:YES completion:nil];
 }
 
 - (IBAction)browseButtonAction:(id)sender {
@@ -219,46 +219,42 @@
     
     NSLog(@"connectionStateDidConnect: %@  didConnect: %@", peerID.displayName, didConnect ? @"YES" : @"NO");
     
-    dispatch_async(dispatch_get_main_queue(), ^{
+    if (didConnect) {
+        // for the master, this might be many names
+        // for the slave, this is ONLY the controller I hope ?????????
+        [self.connectedPeerNames addObject:peerID.displayName];
         
-        if (didConnect) {
-            // for the master, this might be many names
-            // for the slave, this is ONLY the controller I hope ?????????
-            [self.connectedPeerNames addObject:peerID.displayName];
-            
-            // if a slave then stop advertising
-            if (!self.isMaster) {
-                self.isAdvertising = NO;
-                [self.connectManager advertiseSelf:self.isAdvertising];
-            }
-            
-            [self updateConnectUI];
-            
-        } else {
-            
-            [self.connectedPeerNames removeObject:peerID.displayName];
-            
-            // master/browser may have mutiple slaves/advertisers
-            // even after one or all are removed
-            // an advertiser can only have one, and once there are no connections
-            // it will have to readvertise to connect
-            // BUT it's OK for the browser to to still be browsing with NO clients
-            
-            if (!self.isMaster && ([self.connectedPeerNames count] == 0)) { // an advertiser could have only had ONE connected peer
-                [self.connectSwitch setOn: NO];
-            }
+        // if a slave then stop advertising
+        if (!self.isMaster) {
+            self.isAdvertising = NO;
+            [self.connectManager advertiseSelf:self.isAdvertising];
         }
         
+        [self updateConnectUI];
         
-        [self.tableView reloadData];
+    } else {
+        
+        [self.connectedPeerNames removeObject:peerID.displayName];
+        
+        // master/browser may have mutiple slaves/advertisers
+        // even after one or all are removed
+        // an advertiser can only have one, and once there are no connections
+        // it will have to readvertise to connect
+        // BUT it's OK for the browser to to still be browsing with NO clients
+        
+        if (!self.isMaster && ([self.connectedPeerNames count] == 0)) { // an advertiser could have only had ONE connected peer
+            [self.connectSwitch setOn: NO];
+        }
+    }
+    
+    [self.tableView reloadData];
 
-        
-    });
 }
 
 
 - (void)didReceiveMessageWithKey:(NSString *)key value:(id)value {
     // now decide what to do
+
 }
 
 
@@ -270,25 +266,17 @@
 }
 
 
-#pragma mark MCBrowserViewControllerDelegate methods
-
 // these are only for the master which is the only one that does the browsing
-
-- (void)browserViewControllerDidFinish:(MCBrowserViewController *)browserViewController {
+- (void)browserViewController:(MCBrowserViewController *)browser didConnect:(BOOL)didConnect {
+    
     // the connect switch should still be on
     // as well as the list of peers
     [self dismissViewControllerAnimated:YES completion:nil];
     
-    self.isBrowsing = NO;
-    
-    [self updateConnectUI];
-    
-    // can initiate sending data at this point
-}
+    if (didConnect) {
+        // can initiate sending data at this point
+    }
 
-- (void)browserViewControllerWasCancelled:(MCBrowserViewController *)browserViewController {
-    [self dismissViewControllerAnimated:YES completion:nil];
-    
     self.isBrowsing = NO;
     [self updateConnectUI];
 }
@@ -296,24 +284,23 @@
 
 #pragma mark - Table view data source
 
+// Use self.connectManager.connectedPeerIDs to have the peerID for deletion/disconnecting
+
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     return self.isMaster ? NSLocalizedString(@"Connected Remotes",@"") : NSLocalizedString(@"Controller",@"");
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView { return 1; }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    // Return the number of rows in the section.
-    return  [self.connectedPeerNames count];
+    return  [self.connectManager.connectedPeerIDs count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
-    cell.textLabel.text = [self.connectedPeerNames objectAtIndex:indexPath.row];
+    cell.textLabel.text = [[self.connectManager.connectedPeerIDs objectAtIndex:indexPath.row] displayName ];
     
     return cell;
 }
