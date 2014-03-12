@@ -81,7 +81,7 @@
 //        self.advertiser = nil;
 //    }
     
-    self.isAdvertising = shouldAdvertise;
+    //self.isAdvertising = shouldAdvertise;
     
     if (shouldAdvertise) {
         self.nearbyAdvertiser = [[MCNearbyServiceAdvertiser alloc] initWithPeer:self.peerID discoveryInfo:self.discoveryInfo serviceType:kServiceType];
@@ -105,9 +105,9 @@
     [self.connectedPeerNames removeAllObjects];
     [self.session disconnect];
     
-    for (MCPeerID *peer in self.session.connectedPeers) {
-        [self.delegate peerDidDisconnect:peer];
-    }
+//    for (MCPeerID *peer in self.session.connectedPeers) {
+//        [self.delegate peerDidDisconnect:peer];
+//    }
 }
 
 
@@ -150,6 +150,13 @@
 
 #pragma mark - MCSession Delegate method implementation
 
+/******
+Important: Delegate calls occur on a private operation queue. If your app needs to perform an action on a particular run loop or operation queue, its delegate method should explicitly dispatch or schedule that work.
+******/
+
+// delegate calls are ALL called on a PRIVATE queue
+// and if the delegate updates the UI, it has to do it on the main queue
+
 // both browsers and advertisers come here
 -(void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state {
     
@@ -188,9 +195,12 @@
     // could also use Notifications instead
     //[self.delegate connectedPeerNamesDidChange:self.connectedPeerNames hasConnections:self.hasConnections];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
+    
+    // delegate calls are ALL called on a PRIVATE queue
+    // and the delegate updates the UI, so it has to do it on the main queue
+    //dispatch_async(dispatch_get_main_queue(), ^{
         [self.delegate connectionStateDidConnect:didConnect withPeerID:peerID];
-    });
+    //});
     
     
     

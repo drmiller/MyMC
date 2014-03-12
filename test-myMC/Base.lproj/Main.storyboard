@@ -70,19 +70,24 @@
                                 </connections>
                             </segmentedControl>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gc0-Qv-lUw">
-                                <rect key="frame" x="120" y="339" width="80" height="30"/>
+                                <rect key="frame" x="101" y="339" width="119" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Find Slaves">
+                                <state key="normal" title="Find More Slaves">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
                                     <action selector="browseButtonAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="iVi-AG-oHe"/>
                                 </connections>
                             </button>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" animating="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="Hhe-4N-OrP">
+                                <rect key="frame" x="253" y="80" width="20" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="advertisingActivityIndicator" destination="Hhe-4N-OrP" id="yjC-a0-yz9"/>
                         <outlet property="browseButton" destination="gc0-Qv-lUw" id="sqv-oV-miN"/>
                         <outlet property="connectLabel" destination="BMw-tu-SMa" id="X0r-ix-2b8"/>
                         <outlet property="connectSwitch" destination="A9g-D6-XGD" id="ChW-sl-amR"/>
