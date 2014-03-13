@@ -6,33 +6,9 @@
 //  Copyright (c) 2014 eNATAL, LLC. All rights reserved.
 //
 
+#import "PodiumMessage.h"
 
-
-/*
- THIS USED TO BE AN ACTION ARRAY???
- Commands - The key @“DO_COMMAND_KEY” says it’s a command and the value is an integer specifying the command.
- 
- DO_NOTHING_VALUE ?
- RESIGN_ACTIVE_VALUE
- DISCONNECT_STOP_BROWSING_VALUE
- DISCONNECT_ONLY_VALUE
- 
- START_RESUME_VALUE
- PAUSE_STOP_VALUE
- 
- 
- Messages with content (not just an integer)
- 
- DISPLAY_MESSAGE_KEY (the message string)
- UPDATE_ELAPSED_SECONDS_KEY (elapsed seconds)
- UPDATE_SETTINGS_KEY (the settings array)
- 
- START_RESUME (with elapsed seconds + 1)
- 
- SCROLL_PAGE_KEY (current page + 1)
- 
- CYCLE_VIEWS_KEY ( BOOL for doCycleViews)
- */
+// keys for dictionaries with one item
 
 #define DISPLAY_MESSAGE_KEY @"DISPLAY_MESSAGE_KEY"
 #define ELAPSED_SECONDS_KEY @"ELAPSED_SECONDS_KEY"
@@ -41,19 +17,24 @@
 #define CYCLE_VIEWS_KEY @"CYCLE_VIEWS_KEY"
 #define UPDATE_SETTINGS_KEY @"UPDATE_SETTINGS_KEY"
 
-#import "PodiumMessage.h"
+// strings for commands
+
+#define DO_NOTHING_CMD @"DO_NOTHING_COMMAND"
+#define RESIGN_ACTIVE_CMD @"RESIGN_ACTIVE_COMMAND"
+#define DISCONNECT_STOP_BROWSING_CMD @"DISCONNECT_STOP_BROWSING_COMMAND"
+#define DISCONNECT_ONLY_CMD @"DISCONNECT_ONLY_COMMAND"
+#define START_RESUME_CMD @"START_RESUME_COMMAND"
+#define PAUSE_STOP_CMD @"PAUSE_STOP_COMMAND"
 
 
 @interface PodiumMessage()
 
-
+@property(nonatomic,strong)NSArray *indexArray;
 
 @end
 
 
-
 @implementation PodiumMessage
-
 
 
 - (id)init {
@@ -61,7 +42,17 @@
     if (self) {
         self.indexArray = @[
                         DISPLAY_MESSAGE_KEY,
-                        DISPLAY_MESSAGE_KEY
+                        ELAPSED_SECONDS_KEY,
+                        START_RESUME_KEY,
+                        SCROLL_PAGE_KEY,
+                        CYCLE_VIEWS_KEY,
+                        UPDATE_SETTINGS_KEY,
+                        DO_NOTHING_CMD,
+                        RESIGN_ACTIVE_CMD,
+                        DISCONNECT_STOP_BROWSING_CMD,
+                        DISCONNECT_ONLY_CMD,
+                        START_RESUME_CMD,
+                        PAUSE_STOP_CMD
                         ];
     }
     return self;
@@ -72,12 +63,6 @@
     
     return theIndex;
 }
-
-
-//- (NSData *)archiveDictionary:(NSDictionary *)dict {
-//    return [NSKeyedArchiver archivedDataWithRootObject:dict];
-//}
-
 
 - (NSData *)messagePacket:(NSString *)message {
     return [NSKeyedArchiver archivedDataWithRootObject:@{ DISPLAY_MESSAGE_KEY : message }];
@@ -120,6 +105,29 @@
 - (NSArray *)settingsFromUpdateSettingsPacket:(NSData *)data {
     return [[NSKeyedUnarchiver unarchiveObjectWithData:data] objectForKey:UPDATE_SETTINGS_KEY];
 }
+
+
+// just need the keys, don't care about the value
+
+- (NSData *)doNothingPacket {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ DO_NOTHING_CMD : @(1) }];
+}
+- (NSData *)resignActivePacket {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ RESIGN_ACTIVE_CMD : @(1) }];
+}
+- (NSData *)disconnectStopBrowsingPacket {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ DISCONNECT_STOP_BROWSING_CMD : @(1) }];
+}
+- (NSData *)disconnectOnlyPacket {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ DISCONNECT_ONLY_CMD : @(1) }];
+}
+- (NSData *)startResumePacket {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ START_RESUME_CMD : @(1) }];
+}
+- (NSData *)pauseStopPacket {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ PAUSE_STOP_CMD : @(1) }];
+}
+
 
 @end
 
