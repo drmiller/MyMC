@@ -39,13 +39,21 @@ CYCLE_VIEWS_KEY ( BOOL for doCycleViews)
 
 @property(nonatomic,strong)NSArray *indexArray;
 
+- (NSData *)messagePacket:(NSString *)message;
 - (NSString *)messageFromPacket:(NSData *)data;
 
-- (NSData *)messagePacket:(NSString *)message;
 - (NSData *)elapsedSecondsPacket:(NSInteger)seconds;
-- (NSData *)startResumePacket:(NSInteger)seconds; // elapsed seconds + 1
-- (NSData *)scrollPagePacket:(NSInteger)seconds; // current page + 1
-- (NSData *)cycleViewsPacket:(BOOL)doCycle;
-- (NSData *)updateSettingsPacket:(NSDictionary *)settings;
+- (NSInteger)elapsedSecondsFromPacket:(NSData *)data;
 
+- (NSData *)startResumePacketWithElapsedSeconds:(NSInteger)seconds;
+- (NSInteger)elapsedSecondsFromStartResumePacket:(NSData *)data;
+
+- (NSData *)scrollPagePacketWithPage:(NSInteger)page;
+- (NSInteger)scrollPageFromPacket:(NSData *)data;
+
+- (NSData *)cycleViewsPacket:(BOOL)doCycle;
+- (BOOL)doCycleFromCycleViewsPacket:(NSData *)data;
+
+- (NSData *)updateSettingsPacket:(NSArray *)settings;
+- (NSArray *)settingsFromUpdateSettingsPacket:(NSData *)data;
 @end

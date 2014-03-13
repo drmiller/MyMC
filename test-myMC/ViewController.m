@@ -25,6 +25,8 @@
 
 @property (nonatomic,assign)BOOL isAdvertising;
 @property (nonatomic,assign)BOOL isBrowsing;
+@property (nonatomic,assign)BOOL isConnecting;
+@property (nonatomic,assign)BOOL isConnected;
 
 @property (nonatomic,strong)NSMutableArray *connectedPeerNames;
 
@@ -79,11 +81,11 @@
         self.advertisingActivityIndicator.hidden = !self.isAdvertising;
         
         if (self.isAdvertising) {
-            labelText = NSLocalizedString(@"Advertising self to master...",@"");
             [self.advertisingActivityIndicator startAnimating];
+            labelText = self.isConnecting ? NSLocalizedString(@"Connecting to master...",@"") : NSLocalizedString(@"Advertising self to master...",@"");
         } else {
             [self.advertisingActivityIndicator stopAnimating];
-             labelText = NSLocalizedString(@"Connect to master",@"");
+            labelText = self.isConnected ? NSLocalizedString(@"CONNECTED to master",@"") : NSLocalizedString(@"Connect to master",@"");
         }
     }
     
@@ -226,7 +228,8 @@
         
         // if a slave then stop advertising
         if (!self.isMaster) {
-            self.isAdvertising = NO;
+            self.isAdvertising = self.isConnecting = NO;
+            self.isConnected = YES;
             [self.connectManager advertiseSelf:self.isAdvertising];
         }
         
@@ -236,13 +239,17 @@
         
         [self.connectedPeerNames removeObject:peerID.displayName];
         
+        BOOL hasPeers = ([self.connectedPeerNames count] > 0);
+        
+        self.isConnected = hasPeers;
+        
         // master/browser may have mutiple slaves/advertisers
         // even after one or all are removed
         // an advertiser can only have one, and once there are no connections
         // it will have to readvertise to connect
         // BUT it's OK for the browser to to still be browsing with NO clients
         
-        if (!self.isMaster && ([self.connectedPeerNames count] == 0)) { // an advertiser could have only had ONE connected peer
+        if (!self.isMaster && !hasPeers) { // an advertiser could have only had ONE connected peer
             [self.connectSwitch setOn: NO];
         }
     }
@@ -279,6 +286,14 @@
 
     self.isBrowsing = NO;
     [self updateConnectUI];
+}
+
+
+- (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didAcceptInvitation:(BOOL)didAccept {
+    
+    self.isConnecting = didAccept;
+    [self updateConnectUI];
+    
 }
 
 

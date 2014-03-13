@@ -10,6 +10,17 @@
 
 #define kServiceType @"enatal-podium"
 
+enum {
+    MCNotConnected = 0,
+    MCConnecting,
+    MCConnected
+} MCConnectionState;
+
+enum {
+    MCAdvertiser = 0,
+    MCBrowser
+} MCMode;
+
 
 @interface ConnectivityManager() {
     
@@ -114,11 +125,23 @@
 }
 
 
-- (void)sendMessageKey:(NSString *)theKey value:(id)value {
+#pragma mark Send Methods
+
+- (BOOL)sendDataPacket:(NSData *)data {
     NSError *error;
-    NSData *theMessage = [NSKeyedArchiver archivedDataWithRootObject:@{ theKey :  value}];
-    [self.session sendData:theMessage toPeers:self.connectedPeerIDs withMode:MCSessionSendDataUnreliable error:&error];
+    BOOL success = [self.session sendData:data toPeers:self.connectedPeerIDs withMode:MCSessionSendDataUnreliable error:&error];
+    if (!success) {
+        NSLog(@"Connectivity Manager - sendDataPacket Error: %@", error.description);
+    }
+    return success;
 }
+
+
+- (BOOL)sendMessageKey:(NSString *)theKey value:(id)value {
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:@{ theKey :  value}];
+    return [self sendDataPacket:data];
+}
+
 
 
 #pragma mark MCBrowserViewControllerDelegate methods
@@ -180,6 +203,8 @@
         
         NSLog(@"Declined Invitation");
     }
+    
+    [self.delegate advertiser:advertiser didAcceptInvitation:self.isConnecting];
 }
 
 

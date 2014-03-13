@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 eNATAL, LLC. All rights reserved.
 //
 
-#import "ConnectivityManager.h"
+#import "ConnectivityManager.h" // need for delegate
 
 @interface ViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,ConnectivityManagerDelegate>
 

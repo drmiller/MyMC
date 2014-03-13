@@ -19,6 +19,8 @@
 
 - (void)browserViewController:(MCBrowserViewController *)browser didConnect:(BOOL)didConnect;
 
+- (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didAcceptInvitation:(BOOL)didAccept;
+
 @end
 
 
@@ -51,6 +53,8 @@
 
 //- (void)sendMessage:(NSDictionary *)message;
 
-- (void)sendMessageKey:(NSString *)theKey value:(id)value;
+- (BOOL)sendMessageKey:(NSString *)theKey value:(id)value;
+
+- (BOOL)sendDataPacket:(NSData *)data;
 
 @end

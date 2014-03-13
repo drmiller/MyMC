@@ -36,6 +36,10 @@
 
 #define DISPLAY_MESSAGE_KEY @"DISPLAY_MESSAGE_KEY"
 #define ELAPSED_SECONDS_KEY @"ELAPSED_SECONDS_KEY"
+#define START_RESUME_KEY @"START_RESUME_KEY"
+#define SCROLL_PAGE_KEY @"SCROLL_PAGE_KEY"
+#define CYCLE_VIEWS_KEY @"CYCLE_VIEWS_KEY"
+#define UPDATE_SETTINGS_KEY @"UPDATE_SETTINGS_KEY"
 
 #import "PodiumMessage.h"
 
@@ -70,27 +74,51 @@
 }
 
 
-- (NSData *)archiveDictionary:(NSDictionary *)dict {
-    return [NSKeyedArchiver archivedDataWithRootObject:dict];
+//- (NSData *)archiveDictionary:(NSDictionary *)dict {
+//    return [NSKeyedArchiver archivedDataWithRootObject:dict];
+//}
+
+
+- (NSData *)messagePacket:(NSString *)message {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ DISPLAY_MESSAGE_KEY : message }];
 }
-
-
-
 - (NSString *)messageFromPacket:(NSData *)data {
     return [[NSKeyedUnarchiver unarchiveObjectWithData:data] objectForKey:DISPLAY_MESSAGE_KEY];
 }
 
-- (NSData *)messagePacket:(NSString *)message {
-    return [self archiveDictionary: @{ DISPLAY_MESSAGE_KEY : message }];
-}
-
-
-
 - (NSData *)elapsedSecondsPacket:(NSInteger)seconds {
-    return [self archiveDictionary: @{ ELAPSED_SECONDS_KEY : @(seconds) }];
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ ELAPSED_SECONDS_KEY : @(seconds) }];
 }
 - (NSInteger)elapsedSecondsFromPacket:(NSData *)data {
     return [[[NSKeyedUnarchiver unarchiveObjectWithData:data] objectForKey:ELAPSED_SECONDS_KEY] integerValue];
+}
+
+- (NSData *)startResumePacketWithElapsedSeconds:(NSInteger)seconds {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ START_RESUME_KEY : @(seconds + 1) }]; // elapsed seconds + 1
+}
+- (NSInteger)elapsedSecondsFromStartResumePacket:(NSData *)data {
+    return [[[NSKeyedUnarchiver unarchiveObjectWithData:data] objectForKey:START_RESUME_KEY] integerValue] - 1;
+}
+
+- (NSData *)scrollPagePacketWithPage:(NSInteger)page {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ SCROLL_PAGE_KEY : @(page + 1) }]; // current page + 1
+}
+- (NSInteger)scrollPageFromPacket:(NSData *)data {
+    return [[[NSKeyedUnarchiver unarchiveObjectWithData:data] objectForKey:SCROLL_PAGE_KEY] integerValue] - 1;
+}
+
+- (NSData *)cycleViewsPacket:(BOOL)doCycle {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ CYCLE_VIEWS_KEY : @(doCycle) }];
+}
+- (BOOL)doCycleFromCycleViewsPacket:(NSData *)data {
+    return [[[NSKeyedUnarchiver unarchiveObjectWithData:data] objectForKey:CYCLE_VIEWS_KEY] boolValue];
+}
+
+- (NSData *)updateSettingsPacket:(NSArray *)settings {
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ UPDATE_SETTINGS_KEY : settings }];
+}
+- (NSArray *)settingsFromUpdateSettingsPacket:(NSData *)data {
+    return [[NSKeyedUnarchiver unarchiveObjectWithData:data] objectForKey:UPDATE_SETTINGS_KEY];
 }
 
 @end
