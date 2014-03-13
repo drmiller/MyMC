@@ -58,7 +58,7 @@
     
     self.podiumManager = [[PodiumMessage alloc] init];
     
-    NSLog(@"Index for Key: %i", (int)[self.podiumManager indexForKey:@"SCROLL_PAGE_KEY"]);
+    NSLog(@"Index for Key: %i", (int)[self.podiumManager indexForKey:@"DISCONNECT_STOP_BROWSING_COMMAND"]);
     
     
 }
