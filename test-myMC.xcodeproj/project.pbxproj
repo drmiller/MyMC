@@ -22,6 +22,7 @@
 		3A1A791A18CBEE07003434AA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3A1A791818CBEE07003434AA /* InfoPlist.strings */; };
 		3A1A791C18CBEE07003434AA /* test_myMCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A1A791B18CBEE07003434AA /* test_myMCTests.m */; };
 		3A1A792A18CBFCEA003434AA /* ConnectivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A1A792918CBFCEA003434AA /* ConnectivityManager.m */; };
+		3AA9171618D1370700974A36 /* PodiumMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA9171518D1370700974A36 /* PodiumMessage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,8 @@
 		3A1A791B18CBEE07003434AA /* test_myMCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = test_myMCTests.m; sourceTree = "<group>"; };
 		3A1A792818CBFCEA003434AA /* ConnectivityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectivityManager.h; sourceTree = "<group>"; };
 		3A1A792918CBFCEA003434AA /* ConnectivityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectivityManager.m; sourceTree = "<group>"; };
+		3AA9171418D1370700974A36 /* PodiumMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PodiumMessage.h; sourceTree = "<group>"; };
+		3AA9171518D1370700974A36 /* PodiumMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PodiumMessage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +128,8 @@
 				3A1A78F718CBEE07003434AA /* Supporting Files */,
 				3A1A792818CBFCEA003434AA /* ConnectivityManager.h */,
 				3A1A792918CBFCEA003434AA /* ConnectivityManager.m */,
+				3AA9171418D1370700974A36 /* PodiumMessage.h */,
+				3AA9171518D1370700974A36 /* PodiumMessage.m */,
 			);
 			path = "test-myMC";
 			sourceTree = "<group>";
@@ -268,6 +273,7 @@
 				3A1A790718CBEE07003434AA /* ViewController.m in Sources */,
 				3A1A790118CBEE07003434AA /* AppDelegate.m in Sources */,
 				3A1A792A18CBFCEA003434AA /* ConnectivityManager.m in Sources */,
+				3AA9171618D1370700974A36 /* PodiumMessage.m in Sources */,
 				3A1A78FD18CBEE07003434AA /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
