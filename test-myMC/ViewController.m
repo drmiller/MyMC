@@ -8,8 +8,6 @@
 
 #import "ViewController.h"
 
-#import "PodiumMessage.h"
-
 @interface ViewController ()
 
 @property (weak, nonatomic) IBOutlet UILabel *connectLabel;
@@ -32,8 +30,6 @@
 
 @property(nonatomic,strong) ConnectivityManager *connectManager;
 
-@property(nonatomic,strong) PodiumMessage *podiumManager;
-
 @property(nonatomic,strong)IBOutlet UITableView *tableView;
 
 @end
@@ -54,13 +50,6 @@
     
     self.connectManager = [[ConnectivityManager alloc] init];
     [self.connectManager setDelegate:self];
-    
-    
-    self.podiumManager = [[PodiumMessage alloc] init];
-    
-    NSLog(@"Index for Key: %i", (int)[self.podiumManager indexForKey:@"DISCONNECT_STOP_BROWSING_COMMAND"]);
-    
-    
 }
 
 

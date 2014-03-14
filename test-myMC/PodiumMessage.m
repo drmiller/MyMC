@@ -19,12 +19,12 @@
 
 // strings for commands
 
-#define DO_NOTHING_CMD @"DO_NOTHING_COMMAND"
-#define RESIGN_ACTIVE_CMD @"RESIGN_ACTIVE_COMMAND"
-#define DISCONNECT_STOP_BROWSING_CMD @"DISCONNECT_STOP_BROWSING_COMMAND"
-#define DISCONNECT_ONLY_CMD @"DISCONNECT_ONLY_COMMAND"
-#define START_RESUME_CMD @"START_RESUME_COMMAND"
-#define PAUSE_STOP_CMD @"PAUSE_STOP_COMMAND"
+#define DO_NOTHING_COMMAND @"DO_NOTHING_COMMAND"
+#define RESIGN_ACTIVE_COMMAND @"RESIGN_ACTIVE_COMMAND"
+#define DISCONNECT_STOP_BROWSING_COMMAND @"DISCONNECT_STOP_BROWSING_COMMAND"
+#define DISCONNECT_ONLY_COMMAND @"DISCONNECT_ONLY_COMMAND"
+#define START_RESUME_COMMAND @"START_RESUME_COMMAND"
+#define PAUSE_STOP_COMMAND @"PAUSE_STOP_COMMAND"
 
 
 @interface PodiumMessage()
@@ -47,12 +47,12 @@
                         SCROLL_PAGE_KEY,
                         CYCLE_VIEWS_KEY,
                         UPDATE_SETTINGS_KEY,
-                        DO_NOTHING_CMD,
-                        RESIGN_ACTIVE_CMD,
-                        DISCONNECT_STOP_BROWSING_CMD,
-                        DISCONNECT_ONLY_CMD,
-                        START_RESUME_CMD,
-                        PAUSE_STOP_CMD
+                        DO_NOTHING_COMMAND,
+                        RESIGN_ACTIVE_COMMAND,
+                        DISCONNECT_STOP_BROWSING_COMMAND,
+                        DISCONNECT_ONLY_COMMAND,
+                        PAUSE_STOP_COMMAND,
+                        PAUSE_STOP_COMMAND
                         ];
     }
     return self;
@@ -110,22 +110,22 @@
 // just need the keys, don't care about the value
 
 - (NSData *)doNothingPacket {
-    return [NSKeyedArchiver archivedDataWithRootObject:@{ DO_NOTHING_CMD : @(1) }];
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ DO_NOTHING_COMMAND : @(1) }];
 }
 - (NSData *)resignActivePacket {
-    return [NSKeyedArchiver archivedDataWithRootObject:@{ RESIGN_ACTIVE_CMD : @(1) }];
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ RESIGN_ACTIVE_COMMAND : @(1) }];
 }
 - (NSData *)disconnectStopBrowsingPacket {
-    return [NSKeyedArchiver archivedDataWithRootObject:@{ DISCONNECT_STOP_BROWSING_CMD : @(1) }];
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ DISCONNECT_STOP_BROWSING_COMMAND : @(1) }];
 }
 - (NSData *)disconnectOnlyPacket {
-    return [NSKeyedArchiver archivedDataWithRootObject:@{ DISCONNECT_ONLY_CMD : @(1) }];
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ DISCONNECT_ONLY_COMMAND : @(1) }];
 }
 - (NSData *)startResumePacket {
-    return [NSKeyedArchiver archivedDataWithRootObject:@{ START_RESUME_CMD : @(1) }];
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ START_RESUME_COMMAND : @(1) }];
 }
 - (NSData *)pauseStopPacket {
-    return [NSKeyedArchiver archivedDataWithRootObject:@{ PAUSE_STOP_CMD : @(1) }];
+    return [NSKeyedArchiver archivedDataWithRootObject:@{ PAUSE_STOP_COMMAND : @(1) }];
 }
 
 
